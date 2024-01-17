@@ -1,0 +1,17 @@
+{
+  "name": "@my/rollup-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@rollup/plugin-alias": "^5.1.0",
+    "rollup": "^4.9.5"
+  },
+  "scripts": {
+    "prestart": "rm -rf src && mkdir -p src && cp -rf ../../src/js-esm/* ./src && rollup --config rollup.config.mjs",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

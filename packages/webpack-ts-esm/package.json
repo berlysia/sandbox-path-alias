@@ -1,0 +1,19 @@
+{
+  "name": "@my/webpack-ts-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "prebroken": "echo '👺👺👺\nthis plugin not works for esm. https://github.com/dividab/tsconfig-paths-webpack-plugin/issues/98\n👺👺👺'",
+    "broken": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts-esm/* ./src && webpack && node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

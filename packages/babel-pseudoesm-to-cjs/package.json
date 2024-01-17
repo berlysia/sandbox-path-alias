@@ -1,0 +1,19 @@
+{
+  "name": "@my/babel-pseudoesm-to-cjs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "babel-plugin-module-resolver": "^5.0.0"
+  },
+  "scripts": {
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/js-esm-without-extension/* ./src && babel src --out-dir dist",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

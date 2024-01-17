@@ -1,0 +1,17 @@
+{
+  "name": "@my/swc-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@swc/cli": "^0.1.63",
+    "@swc/core": "^1.3.102"
+  },
+  "scripts": {
+    "prestart": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/js-esm/* ./src && swc src -d dist",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

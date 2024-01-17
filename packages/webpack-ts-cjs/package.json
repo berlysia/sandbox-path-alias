@@ -1,0 +1,17 @@
+{
+  "name": "@my/webpack-ts-cjs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0"
+  },
+  "scripts": {
+    "prestart": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts/* ./src && webpack",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

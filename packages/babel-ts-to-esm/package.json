@@ -1,0 +1,19 @@
+{
+  "name": "@my/babel-ts-to-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-typescript": "^7.23.3",
+    "babel-plugin-module-resolver": "^5.0.0"
+  },
+  "scripts": {
+    "prestart": "rm -rf ./src ./dist && mkdir -p ./src ./dist && cp -rf ../../src/ts-esm/* ./src && babel src --extensions .ts,.js --out-dir dist",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@my/eslint-webpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-import-resolver-webpack": "^0.13.8",
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "scripts": {
+    "prestart": "rm -rf src && mkdir -p src && cp -rf ../../src/js-esm/* ./src",
+    "start": "eslint"
+  },
+  "author": "",
+  "license": "MIT"
+}

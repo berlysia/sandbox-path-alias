@@ -1,0 +1,20 @@
+{
+  "name": "@my/babel-ts-to-cjs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "babel-plugin-module-resolver": "^5.0.0"
+  },
+  "scripts": {
+    "prestart": "rm -rf ./src ./dist && mkdir -p ./src ./dist && cp -rf ../../src/ts/* ./src && babel src --extensions .ts,.js --out-dir dist",
+    "start": "node dist/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

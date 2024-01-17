@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    ["@babel/plugin-transform-modules-commonjs"],
+    [
+      "babel-plugin-module-resolver",
+      {
+        "alias": {
+          "##": "./src",
+          "#deep": "./src/deep"
+        }
+      }
+    ]
+  ]
+}

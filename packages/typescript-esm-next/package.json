@@ -1,0 +1,20 @@
+{
+  "name": "@my/typescript-esm-next",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.js",
+  "devDependencies": {
+    "typescript": "^5.4.0-dev.20240117"
+  },
+  "scripts": {
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-esm/* ./src && tsc -p ./tsconfig.json",
+    "start": "node src/index.js"
+  },
+  "imports": {
+    "##/*": "./src/*",
+    "#deep/*": "./src/deep/*"
+  },
+  "author": "",
+  "license": "MIT"
+}

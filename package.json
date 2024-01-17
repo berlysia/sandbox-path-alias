@@ -1,4 +1,14 @@
 {
   "name": "sandbox-path-alias",
-  "packageManager": "yarn@4.0.2"
+  "scripts": {
+    "start": "npm run start --workspaces --if-present",
+    "broken": "npm run broken --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {},
+  "workspaces": [
+    "packages/*"
+  ]
 }
