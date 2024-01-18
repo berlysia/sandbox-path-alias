@@ -8,7 +8,7 @@
     "typescript": "^5.4.0-dev.20240117"
   },
   "scripts": {
-    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-esm/* ./src && tsc -p ./tsconfig.json",
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-with-extension/* ./src && tsc -p ./tsconfig.json",
     "start": "node src/index.js"
   },
   "imports": {

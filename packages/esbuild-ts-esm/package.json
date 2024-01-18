@@ -9,7 +9,7 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "prestart": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts-esm/* ./src && node esbuild.build.mjs",
+    "prestart": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts-with-extension/* ./src && node esbuild.build.mjs",
     "start": "node dist/index.js"
   },
   "author": "",

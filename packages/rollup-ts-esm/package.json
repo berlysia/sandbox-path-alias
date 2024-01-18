@@ -9,7 +9,7 @@
     "rollup": "^4.9.5"
   },
   "scripts": {
-    "prestart": "rm -rf src && mkdir -p src && cp -rf ../../src/ts-esm/* ./src && rollup --config rollup.config.mjs",
+    "prestart": "rm -rf src && mkdir -p src && cp -rf ../../src/ts-with-extension/* ./src && rollup --config rollup.config.mjs",
     "start": "node dist/index.js"
   },
   "author": "",

@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "devDependencies": {},
   "scripts": {
-    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-esm/* ./src && tsc -p ./tsconfig.json",
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-with-extension/* ./src && tsc -p ./tsconfig.json",
     "start": "node src/index.js"
   },
   "imports": {

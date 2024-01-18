@@ -12,7 +12,7 @@
   },
   "scripts": {
     "prebroken": "echo '👺👺👺\nthis plugin not works for esm. https://github.com/dividab/tsconfig-paths-webpack-plugin/issues/98\n👺👺👺'",
-    "broken": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts-esm/* ./src && webpack && node dist/index.js"
+    "broken": "rm -rf src dist && mkdir -p src dist && cp -rf ../../src/ts-with-extension/* ./src && webpack && node dist/index.js"
   },
   "author": "",
   "license": "MIT"
