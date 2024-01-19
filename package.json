@@ -1,5 +1,6 @@
 {
-  "name": "sandbox-path-alias",
+  "name": "survey-import-path-mappings",
+  "private": true,
   "scripts": {
     "start": "npm run start --workspaces --if-present",
     "broken": "npm run broken --workspaces --if-present"
