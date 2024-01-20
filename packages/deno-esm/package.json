@@ -1,0 +1,14 @@
+{
+  "name": "@my/deno-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "prestart": "rm -rf src && mkdir -p src && cp -rf ../../src/js-esm/* ./src",
+    "start": "deno run src/index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}

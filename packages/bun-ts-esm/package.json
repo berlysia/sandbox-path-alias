@@ -1,0 +1,14 @@
+{
+  "name": "@my/bun-ts-esm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.ts",
+  "devDependencies": {},
+  "scripts": {
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-with-extension/* ./src",
+    "start": "bun src/index.ts"
+  },
+  "author": "",
+  "license": "MIT"
+}

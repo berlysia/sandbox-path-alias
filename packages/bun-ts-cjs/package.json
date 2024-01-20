@@ -1,0 +1,14 @@
+{
+  "name": "@my/bun-ts-cjs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "prestart": "rm -rf ./src && mkdir -p ./src && cp -rf ../../src/ts-with-extension/* ./src",
+    "start": "bun src/index.ts"
+  },
+  "author": "",
+  "license": "MIT"
+}
