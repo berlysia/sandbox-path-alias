@@ -1,0 +1,20 @@
+import { resolve } from "path";
+import alias from "@rollup/plugin-alias";
+<%- transformCommonJS ? 'import commonjs from "@rollup/plugin-commonjs";' : ""%>
+
+export default {
+  input: "src/index.js",
+  output: {
+    dir: "dist",
+    format: "<%= outputFormat %>",
+  },
+  plugins: [
+    <%= transformCommonJS ? "commonjs()," : ""%>
+    alias({
+      entries: [
+        { find: "##", replacement: resolve(process.cwd(), "./src") },
+        { find: "#deep", replacement: resolve(process.cwd(), "./src/deep") },
+      ],
+    }),
+  ],
+};

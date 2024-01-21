@@ -1,0 +1,17 @@
+{
+  "name": "@my/<%= tplSetName %>_<%= srcSetName %>",
+  "version": "1.0.0",
+  "description": "",
+  "type": "<%= moduleType %>",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node src/index.js"
+  },
+  "imports": {
+    "##/*": "./src/*",
+    "#deep/*": "./src/deep/*"
+  },
+  "author": "",
+  "license": "MIT"
+}
