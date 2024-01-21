@@ -23,16 +23,18 @@ export default class RootGenerator extends Generator {
   }
   async configuring() {
     for (const tplSetName of tplSetNames) {
+      if (tplSetName.endsWith("--base")) continue;
       if (
-        !this.answers.targetTplSetNames.some((x) =>
-          tplSetName.startsWith(`${x}-`)
+        !this.answers.targetTplSetNames.some(
+          (x) => tplSetName.startsWith(`${x}-`) || tplSetName === x
         )
       ) {
         continue;
       }
       const genPath = `./templates/${tplSetName}/index.ts`;
+      const Generator = (await import(genPath)).default;
       this.composeWith(
-        { Generator: (await import(genPath)).default, path: genPath } as any,
+        { Generator, path: genPath } as any,
         { tplSetName } as any
       );
     }

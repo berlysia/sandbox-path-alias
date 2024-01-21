@@ -85,7 +85,11 @@ async function main() {
     const generatedRootDirName = `${rootDirName}/${cwd}`;
     const resultEntries: Array<[string, string]> = [];
     const buildResult = await spawnP("npm", ["run", "build"], { cwd });
-    if (buildResult.code === 42) {
+    const isBuildSkipped =
+      buildResult.code === 0 &&
+      buildResult.stdout.trim().split("\n").at(-1)?.trim() === "skipskipskip";
+
+    if (isBuildSkipped) {
       resultEntries.push([colors.cyan_b.underline(generated) + ":build", "⬇"]);
     } else if (buildResult.code !== 0) {
       return [
@@ -96,10 +100,11 @@ async function main() {
             formatStdout(buildResult.stdout, generatedRootDirName),
         ],
       ];
+    } else {
+      resultEntries.push([colors.cyan_b.underline(generated) + ":build", "✅"]);
     }
-    resultEntries.push([colors.cyan_b.underline(generated) + ":build", "✅"]);
 
-    if (buildResult.code === 42) {
+    if (isBuildSkipped) {
       resultEntries.push([colors.cyan_b.underline(generated) + ":check", "⬇"]);
     } else {
       const distDir = generatedRootDirName.includes("-samedir")

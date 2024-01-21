@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import Generator from "yeoman-generator";
 import type { BaseOptions } from "yeoman-generator";
-import { getModuleType, isJs } from "../../srcUtils.js";
+import { getModuleTypeFromSrcSetName, isJs } from "../../srcUtils.js";
 
 const rootDirName = process.cwd();
 function fromRootDir(path: string) {
@@ -33,7 +33,7 @@ export default class extends Generator<Options> {
           fromRootDir(`generated/${pkgName}/babel.config.json`)
         )
       );
-      const moduleType = getModuleType(srcSetName);
+      const moduleType = getModuleTypeFromSrcSetName(srcSetName);
       this.fs.copyTpl(
         this.templatePath(fromCurrentDir("package.json.ejs")),
         this.destinationPath(fromRootDir(`generated/${pkgName}/package.json`)),

@@ -14,8 +14,60 @@ export function isEsm(srcSetName: string) {
   return /-esm-/.test(srcSetName);
 }
 
-export function getModuleType(srcSetName: string) {
+export function getModuleTypeFromSrcSetName(srcSetName: string) {
   if (isCjs(srcSetName)) return "commonjs";
   if (isEsm(srcSetName)) return "module";
   throw new Error(`Unknown module type for ${srcSetName}`);
+}
+
+function thrower(message: string): never {
+  throw new Error(message);
+}
+
+export function parseSrcSetName(srcSetName: string) {
+  return {
+    language: {
+      value: isJs(srcSetName)
+        ? "js"
+        : isTs(srcSetName)
+        ? "ts"
+        : thrower("Unknown language"),
+      get isJS() {
+        return this.value === "js";
+      },
+      get isTS() {
+        return this.value === "ts";
+      },
+    },
+    importStyle: {
+      value: isJs(srcSetName)
+        ? isCjs(srcSetName)
+          ? "require"
+          : isEsm(srcSetName)
+          ? "import"
+          : null
+        : isTs(srcSetName)
+        ? "import"
+        : null,
+      get isRequire() {
+        return this.value === "require";
+      },
+      get isImport() {
+        return this.value === "import";
+      },
+    },
+    expectedModuleType: {
+      value: isJs(srcSetName)
+        ? getModuleTypeFromSrcSetName(srcSetName)
+        : isTs(srcSetName)
+        ? "module"
+        : thrower("Unknown module type"),
+      get isCommonjs() {
+        return this.value === "commonjs";
+      },
+      get isModule() {
+        return this.value === "module";
+      },
+    },
+  } as const;
 }

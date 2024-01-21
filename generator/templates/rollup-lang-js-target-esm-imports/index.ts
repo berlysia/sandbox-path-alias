@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import Generator from "yeoman-generator";
 import type { BaseOptions } from "yeoman-generator";
-import { getModuleType, isCjs, isJs, isTs } from "../../srcUtils.js";
+import {
+  getModuleTypeFromSrcSetName,
+  isCjs,
+  isJs,
+  isTs,
+} from "../../srcUtils.js";
 
 const rootDirName = process.cwd();
 function fromRootDir(path: string) {
