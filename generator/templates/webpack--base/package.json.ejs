@@ -1,0 +1,19 @@
+{
+  "name": "@my/<%= tplSetName %>_<%= srcSetName %>",
+  "version": "1.0.0",
+  "description": "",
+  "type": "<%= moduleType %>",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "node <%= samedir ? "src" : "dist" %>/index.js"
+  },
+  <%- useImports ? `
+  "imports": {
+    "##/*": "./src/*",
+    "#deep/*": "./src/deep/*"
+  },
+` : "" %>
+  "author": "",
+  "license": "MIT"
+}

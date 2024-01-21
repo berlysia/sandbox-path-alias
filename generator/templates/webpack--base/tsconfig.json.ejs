@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "<%= moduleType %>",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "./src",
+    <%- samedir ? `    
+    "outDir": "./dist",
+` : "" %>
+    <%- useTsPaths ? `
+    "baseUrl": ".",
+    "paths": {
+      "##/*": ["./src/*"],
+      "#deep/*": ["./src/deep/*"]
+    }
+` : "" %>
+  },
+  "include": ["src/**/*"]
+}

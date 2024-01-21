@@ -1,0 +1,76 @@
+import { resolve } from "path";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import webpack from "webpack";
+
+const NormalModuleReplacementPlugin = webpack.NormalModuleReplacementPlugin;
+
+function resolveFromRoot(...args) {
+  return resolve(process.cwd(), ...args);
+}
+
+const config = {
+  cache: false,
+  mode: "production",
+  entry: "./src/index.js",
+  output: {
+    path: resolveFromRoot("dist"),
+    filename: "index.js",
+  },
+  resolve: {
+    <% if (isTS) { %>
+    // Add `.ts` and `.tsx` as a resolvable extension.
+    extensions: [".ts", ".tsx", ".js"],
+    // Add support for TypeScripts fully qualified ESM imports.
+    extensionAlias: {
+      ".js": [".js", ".ts"],
+      ".cjs": [".cjs", ".cts"],
+      ".mjs": [".mjs", ".mts"],
+    },
+    <% } %>
+    <% if (useAlias) { %>
+    alias: {
+      "##": resolveFromRoot("src"),
+      "#deep": resolveFromRoot("src/deep"),
+    },
+    <% } %>
+
+    plugins: [
+      <% if (useTsconfig) { %>
+      new TsconfigPathsPlugin({ configFile: resolveFromRoot("tsconfig.json") }),
+      <% } %>
+
+      <% if (useTsconfigForJS) { %>
+      new TsconfigPathsPlugin({ configFile: resolveFromRoot("tsconfig.json"), extensions: [".js", ".ts", ".tsx"] }),
+      <% } %>
+
+    ],
+  },
+  module: {
+    rules: [
+      <% if (isTS) { %>
+      // all files with a `.ts`, `.cts`, `.mts` or `.tsx` extension will be handled by `ts-loader`
+      { test: /\.([cm]?ts|tsx)$/, loader: "ts-loader" },
+      <% } %>
+    ],
+  },
+  plugins: [
+    <% if (useNormalPlugin) { %>
+    new NormalModuleReplacementPlugin(/^##/, (resource) => {
+      resource.request = resource.request.replace(
+        /^##/,
+        resolveFromRoot("src")
+      );
+    }),
+    new NormalModuleReplacementPlugin(/^#deep/, (resource) => {
+      resource.request = resource.request.replace(
+        /^#deep/,
+        resolveFromRoot("src/deep")
+      );
+    }),
+    <% } %>
+    <% if (isTS) { %> new ForkTsCheckerWebpackPlugin(),<% } %>
+  ]
+};
+
+export default config;
