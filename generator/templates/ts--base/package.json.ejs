@@ -6,12 +6,21 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js"
+    "start": "node <%= samedir ? "src" : "dist" %>/index.js"
   },
+<% if (useImports) { %>
+<% if (!samedir) { %>
   "imports": {
     "##/*": ["./dist/*", "./src/*"],
     "#deep/*": ["./dist/deep/*", "./src/deep/*"]
   },
+<% } else { %>
+  "imports": {
+    "##/*": ["./src/*"],
+    "#deep/*": ["./src/deep/*"]
+  },
+<% } %>
+<% } %>
   "author": "",
   "license": "MIT"
 }

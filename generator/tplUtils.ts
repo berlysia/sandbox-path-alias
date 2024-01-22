@@ -4,10 +4,10 @@ export function parseTplSetName(tplSetName: string) {
   const splitted = tplSetName.replace(slug, "").split("-");
 
   let library = splitted.shift;
-  let language = null;
-  let importStyle = null;
-  let buildTarget = null;
-  let moduleType = null;
+  let language: string | null = null;
+  let importStyle: string | null = null;
+  let buildTarget: string | null = null;
+  let moduleType: string | null = null;
 
   for (let i = 0; i < splitted.length; i++) {
     const head = splitted[i];
@@ -35,8 +35,24 @@ export function parseTplSetName(tplSetName: string) {
     library,
     language,
     importStyle,
-    buildTarget,
+    buildTarget: {
+      value: buildTarget,
+      get tsModule() {
+        if (buildTarget === "cjs") return "CommonJS";
+        if (buildTarget === "esm") return "NodeNext";
+        thrower(`unknown build target: ${buildTarget}`);
+      },
+      get moduleType() {
+        if (buildTarget === "cjs") return "commonjs";
+        if (buildTarget === "esm") return "module";
+        thrower(`unknown build target: ${buildTarget}`);
+      },
+    },
     moduleType,
     slug,
   };
+}
+
+function thrower(message: string): never {
+  throw new Error(message);
 }

@@ -8,12 +8,12 @@
     "build": "webpack",
     "start": "node <%= samedir ? "src" : "dist" %>/index.js"
   },
-  <%- useImports ? `
+<% if (useImports) { %>
   "imports": {
     "##/*": "./src/*",
     "#deep/*": "./src/deep/*"
   },
-` : "" %>
+<% } %>
   "author": "",
   "license": "MIT"
 }

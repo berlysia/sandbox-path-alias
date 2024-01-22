@@ -10,16 +10,16 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    <%- samedir ? `    
+<% if (samedir) { %>
     "outDir": "./dist",
-` : "" %>
-    <%- useTsPaths ? `
+<% } %>
+<% if (useTsPaths) { %>
     "baseUrl": ".",
     "paths": {
       "##/*": ["./src/*"],
       "#deep/*": ["./src/deep/*"]
     }
-` : "" %>
+<% } %>
   },
   "include": ["src/**/*"]
 }

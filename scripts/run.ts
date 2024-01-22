@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { spawn } from "node:child_process";
 import colors from "colors-cli/safe";
+import { parseTplSetName } from "../generator/tplUtils.js";
 
 const rootDirName = process.cwd();
 const reset = "\x1b[0m";
@@ -82,6 +83,8 @@ async function main() {
 
   const promises = generatedDirs.map(async (generated) => {
     const cwd = `generated/${generated}`;
+    const [tplSetName, srcSetName] = generated.split("_");
+    const parsedTplSetName = parseTplSetName(tplSetName);
     const generatedRootDirName = `${rootDirName}/${cwd}`;
     const resultEntries: Array<[string, string]> = [];
     const buildResult = await spawnP("npm", ["run", "build"], { cwd });
@@ -107,7 +110,7 @@ async function main() {
     if (isBuildSkipped) {
       resultEntries.push([colors.cyan_b.underline(generated) + ":check", "⬇"]);
     } else {
-      const distDir = generatedRootDirName.includes("-samedir")
+      const distDir = parsedTplSetName.slug.includes("samedir")
         ? "src"
         : "dist";
       const checkResult = await spawnP(

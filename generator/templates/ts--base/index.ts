@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import Generator from "yeoman-generator";
 import type { BaseOptions } from "yeoman-generator";
-import { isCjs, isTs } from "../../srcUtils.js";
+import { parseSrcSetName } from "../../srcUtils.js";
+import { parseTplSetName } from "../../tplUtils.js";
 
 const rootDirName = process.cwd();
 function fromRootDir(path: string) {
@@ -19,28 +20,47 @@ type Options = BaseOptions & {
 
 export default class extends Generator<Options> {
   writing() {
+    const parsedTplSetName = parseTplSetName(this.options.tplSetName);
     for (const srcSetName of srcSetNames) {
-      if (!isTs(srcSetName)) continue;
+      const parsedSrcSetName = parseSrcSetName(srcSetName);
+      if (
+        parsedTplSetName.language &&
+        parsedTplSetName.language !== parsedSrcSetName.language.value
+      )
+        continue;
 
       const pkgName = `${this.options.tplSetName}_${srcSetName}`;
       this.fs.copy(
         this.templatePath(fromRootDir(`src/${srcSetName}`)),
         this.destinationPath(fromRootDir(`generated/${pkgName}/src`))
       );
-      const sourceExt = isTs(srcSetName) ? "ts" : "js";
+
       this.fs.copyTpl(
         this.templatePath(fromCurrentDir("package.json.ejs")),
         this.destinationPath(fromRootDir(`generated/${pkgName}/package.json`)),
         {
           tplSetName: this.options.tplSetName,
           srcSetName,
-          moduleType: "commonjs",
-          sourceExt,
+          moduleType:
+            parsedTplSetName.buildTarget.moduleType ||
+            parsedSrcSetName.expectedModuleType.value,
+          sourceExt: parsedSrcSetName.language.value,
+          samedir: parsedTplSetName.slug.includes("samedir"),
+          useImports: parsedTplSetName.slug.includes("imports"),
         }
       );
+
       this.fs.copyTpl(
         this.templatePath(fromCurrentDir("tsconfig.json.ejs")),
-        this.destinationPath(fromRootDir(`generated/${pkgName}/tsconfig.json`))
+        this.destinationPath(fromRootDir(`generated/${pkgName}/tsconfig.json`)),
+        {
+          moduleType: parsedTplSetName.buildTarget.tsModule,
+          useTsPaths:
+            parsedSrcSetName.language.isTS &&
+            (parsedTplSetName.slug.includes("tsconfig") ||
+              !parsedTplSetName.slug.includes("imports")),
+          samedir: parsedTplSetName.slug.includes("samedir"),
+        }
       );
     }
   }
