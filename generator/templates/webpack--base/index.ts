@@ -42,7 +42,7 @@ export default class extends Generator<Options> {
           tplSetName: this.options.tplSetName,
           srcSetName,
           moduleType:
-            parsedTplSetName.moduleType ||
+            parsedTplSetName.buildTarget.moduleType ||
             parsedSrcSetName.expectedModuleType.value,
           sourceExt: parsedSrcSetName.language.value,
           samedir: parsedTplSetName.slug.includes("samedir"),
