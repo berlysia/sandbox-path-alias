@@ -8,10 +8,19 @@
     "build": "node esbuild.build.mjs",
     "start": "node dist/index.js"
   },
+<% if (useImports) { %>
+<% if (samedir) { %>
   "imports": {
-    "##/*": "./src/*",
-    "#deep/*": "./src/deep/*"
+    "##/*": ["./src/*"],
+    "#deep/*": ["./src/deep/*"]
   },
+<% } else { %>
+  "imports": {
+    "##/*": ["./dist/*", "./src/*"],
+    "#deep/*": ["./dist/deep/*", "./src/deep/*"]
+  },
+<% } %>
+<% } %>
   "author": "",
   "license": "MIT"
 }

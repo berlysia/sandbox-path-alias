@@ -45,46 +45,44 @@ export default class extends Generator<Options> {
             (parsedTplSetName.buildTarget.value &&
               parsedTplSetName.buildTarget.moduleType) ||
             parsedSrcSetName.expectedModuleType.value,
-          sourceExt: parsedSrcSetName.language.value,
-          samedir: false,
+          samedir: parsedTplSetName.slug.includes("imports"),
           useImports: parsedTplSetName.slug.includes("imports"),
         }
       );
 
       this.fs.copyTpl(
-        this.templatePath(fromCurrentDir("rollup.config.mjs.ejs")),
+        this.templatePath(fromCurrentDir("esbuild.build.mjs.ejs")),
         this.destinationPath(
-          fromRootDir(`generated/${pkgName}/rollup.config.mjs`)
+          fromRootDir(`generated/${pkgName}/esbuild.build.mjs`)
         ),
         {
           sourceExt: parsedSrcSetName.language.value,
-          outputFormat: parsedTplSetName.buildTarget.value
-            ? parsedTplSetName.buildTarget.outputFormat
-            : parsedSrcSetName.expectedModuleType.rollupOutputFormat,
-          transformCommonJS: parsedSrcSetName.importStyle.isRequire,
           useAlias: parsedTplSetName.slug.includes("alias"),
-          useTypeScript:
-            parsedSrcSetName.language.isTS ||
-            parsedTplSetName.slug.includes("tsconfig"),
-          useImports: parsedTplSetName.slug.includes("imports"),
+          outputFormat: parsedTplSetName.buildTarget.outputFormat,
         }
       );
 
       if (
         parsedSrcSetName.language.isTS ||
-        parsedTplSetName.slug.includes("tsconfig")
+        parsedTplSetName.slug.includes("jsconfig")
       ) {
         this.fs.copyTpl(
           this.templatePath(fromCurrentDir("tsconfig.json.ejs")),
           this.destinationPath(
-            fromRootDir(`generated/${pkgName}/tsconfig.json`)
+            fromRootDir(
+              `generated/${pkgName}/${
+                parsedTplSetName.slug.includes("jsconfig")
+                  ? "jsconfig"
+                  : "tsconfig"
+              }.json`
+            )
           ),
           {
             moduleType: "ESNext",
-            useTsPaths:
-              parsedSrcSetName.language.isTS &&
-              (parsedTplSetName.slug.includes("tsconfig") ||
-                !parsedTplSetName.slug.includes("imports")),
+            useTsPaths: parsedSrcSetName.language.isTS
+              ? parsedTplSetName.slug.includes("tsconfig") ||
+                !parsedTplSetName.slug.includes("imports")
+              : parsedTplSetName.slug.includes("jsconfig"),
             samedir: parsedTplSetName.slug.includes("samedir"),
             allowJs: parsedSrcSetName.language.isJS,
           }

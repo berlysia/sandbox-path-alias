@@ -1,11 +1,15 @@
 import esbuild from "esbuild";
 
 esbuild.build({
-  entryPoints: ["src/index.js"],
+  entryPoints: ["src/index.<%= sourceExt %>"],
   outdir: "dist",
   bundle: true,
+  platform: "node",
+  format: "<%= outputFormat %>",
+<% if (useAlias) { %>
   alias: {
     "##": "./src",
     "#deep": "./src/deep",
   },
+<% } %>
 });

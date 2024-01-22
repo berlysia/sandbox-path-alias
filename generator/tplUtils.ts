@@ -67,7 +67,7 @@ export function parseTplSetName(tplSetName: string) {
         if (buildTarget === "esm") return "es6";
         thrower(`unknown build target: ${buildTarget}`);
       },
-      get rollupOutputFormat() {
+      get outputFormat() {
         if (buildTarget === "cjs") return "cjs";
         if (buildTarget === "esm") return "esm";
         thrower(`unknown build target: ${buildTarget}`);
