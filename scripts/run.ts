@@ -5,7 +5,7 @@ import { parseTplSetName } from "../generator/tplUtils.js";
 
 const rootDirName = process.cwd();
 const reset = "\x1b[0m";
-const short = false;
+const short = true;
 
 function spawnP(
   command: string,
@@ -20,7 +20,7 @@ function spawnP(
 }> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: short ? ["ignore", "pipe", "ignore"] : ["ignore", "pipe", "pipe"],
       ...options,
     });
     let stdoutBuffer = "";
@@ -106,7 +106,7 @@ async function main() {
       return [
         [
           markedFileName + " :build",
-          "❌" +
+          STATUS.FAILURE +
             formatStderr(buildResult.stderr, generatedRootDirName) +
             formatStdout(buildResult.stdout, generatedRootDirName),
         ],
@@ -168,11 +168,11 @@ async function main() {
     return resultEntries;
   });
 
-  const results = await Promise.all(promises);
-
-  for (const entry of results.flat()) {
-    console.log(...entry);
-  }
+  promises.reduce<Promise<void>>(async (p, c) => {
+    await p;
+    const result = await c;
+    console.log(...result.flat());
+  }, Promise.resolve());
 }
 
 main().catch(console.error);
