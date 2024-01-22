@@ -73,6 +73,11 @@ export function parseSrcSetName(srcSetName: string) {
         if (this.isModule) return "NodeNext";
         thrower(`unknown module type: ${this.value}`);
       },
+      get rollupOutputFormat() {
+        if (this.isCommonjs) return "cjs";
+        if (this.isModule) return "esm";
+        thrower(`unknown module type: ${this.value}`);
+      },
     },
   } as const;
 }

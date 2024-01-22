@@ -1,0 +1,26 @@
+import { resolve } from "path";
+import alias from "@rollup/plugin-alias";
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
+
+export default {
+  input: "src/index.<%= sourceExt %>",
+  output: {
+    dir: "dist",
+    format: "<%= outputFormat %>",
+  },
+  plugins: [
+    <%= transformCommonJS ? "commonjs()," : "" %>
+    <%= useTypeScript ? "typescript()," : "" %>
+    <%= useImports ? "nodeResolve()," : "" %>
+    <% if (useAlias) { %>
+    alias({
+      entries: [
+        { find: "##", replacement: resolve(process.cwd(), "./src") },
+        { find: "#deep", replacement: resolve(process.cwd(), "./src/deep") },
+      ],
+    }),
+    <% } %>
+  ],
+};
