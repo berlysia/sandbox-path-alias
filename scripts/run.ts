@@ -5,6 +5,7 @@ import { parseTplSetName } from "../generator/tplUtils.js";
 
 const rootDirName = process.cwd();
 const reset = "\x1b[0m";
+const short = false;
 
 function spawnP(
   command: string,
@@ -78,6 +79,12 @@ function formatStderr(stderr: string, rootDirName: string) {
   );
 }
 
+const STATUS = {
+  SUCCESS: "✅",
+  FAILURE: "❌",
+  SKIPPED: "⬇",
+} as const;
+
 async function main() {
   const generatedDirs = await fs.readdir("generated");
 
@@ -91,24 +98,25 @@ async function main() {
     const isBuildSkipped =
       buildResult.code === 0 &&
       buildResult.stdout.trim().split("\n").at(-1)?.trim() === "skipskipskip";
+    const markedFileName = colors.cyan_bt.underline(cwd);
 
     if (isBuildSkipped) {
-      resultEntries.push([colors.cyan_b.underline(generated) + ":build", "⬇"]);
+      resultEntries.push([markedFileName + ":build", STATUS.SKIPPED]);
     } else if (buildResult.code !== 0) {
       return [
         [
-          colors.cyan_b.underline(generated) + ":build",
+          markedFileName + " :build",
           "❌" +
             formatStderr(buildResult.stderr, generatedRootDirName) +
             formatStdout(buildResult.stdout, generatedRootDirName),
         ],
       ];
     } else {
-      resultEntries.push([colors.cyan_b.underline(generated) + ":build", "✅"]);
+      resultEntries.push([markedFileName + ":build", STATUS.SUCCESS]);
     }
 
     if (isBuildSkipped) {
-      resultEntries.push([colors.cyan_b.underline(generated) + ":check", "⬇"]);
+      resultEntries.push([markedFileName + ":check", STATUS.SKIPPED]);
     } else {
       const distDir = parsedTplSetName.slug.includes("samedir")
         ? "src"
@@ -123,14 +131,12 @@ async function main() {
         { cwd: rootDirName }
       );
       if (checkResult.code === 0) {
-        resultEntries.push([
-          colors.cyan_b.underline(generated) + ":check",
-          "✅",
-        ]);
+        resultEntries.push([markedFileName + ":check", STATUS.SUCCESS]);
       } else {
         resultEntries.push([
-          colors.cyan_b.underline(generated) + ":check",
-          "❌" + formatStderr(checkResult.stderr, generatedRootDirName),
+          markedFileName + ":check",
+          STATUS.FAILURE +
+            formatStderr(checkResult.stderr, generatedRootDirName),
         ]);
       }
     }
@@ -139,22 +145,27 @@ async function main() {
       cwd,
     });
     if (startResult.code === 0) {
+      resultEntries.push([markedFileName + ":start", STATUS.SUCCESS + "\n"]);
+    } else {
+      resultEntries.push([
+        markedFileName + ":start",
+        STATUS.FAILURE + formatStderr(startResult.stderr, generatedRootDirName),
+      ]);
+    }
+
+    if (
+      short ||
+      resultEntries.every(
+        (e) =>
+          e[1].startsWith(STATUS.SKIPPED) || e[1].startsWith(STATUS.SUCCESS)
+      )
+    ) {
       return [
-        ...resultEntries,
-        [
-          colors.cyan_b.underline(generated) + ":start",
-          "✅" + formatStdout(startResult.stdout, generatedRootDirName),
-        ],
+        [markedFileName, resultEntries.map((e) => e[1][0]).join("") + "\n"],
       ];
     }
 
-    return [
-      ...resultEntries,
-      [
-        colors.cyan_b.underline(generated) + ":start",
-        "❌" + formatStderr(startResult.stderr, generatedRootDirName),
-      ],
-    ];
+    return resultEntries;
   });
 
   const results = await Promise.all(promises);

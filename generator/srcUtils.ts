@@ -68,6 +68,11 @@ export function parseSrcSetName(srcSetName: string) {
       get isModule() {
         return this.value === "module";
       },
+      get tsModule() {
+        if (this.isCommonjs) return "CommonJS";
+        if (this.isModule) return "NodeNext";
+        thrower(`unknown module type: ${this.value}`);
+      },
     },
   } as const;
 }

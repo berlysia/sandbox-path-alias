@@ -1,4 +1,4 @@
-import Generator from "yeoman-generator";
+import Generator, { BaseOptions } from "yeoman-generator";
 import fs from "node:fs";
 
 const tplSetNames = fs.readdirSync("generator/templates");
@@ -6,20 +6,29 @@ const tplTargetLibraries = Array.from(
   new Set(tplSetNames.map((x) => x.split("-")[0]))
 );
 
-export default class RootGenerator extends Generator {
+export default class RootGenerator extends Generator<
+  BaseOptions & { libraryName?: string }
+> {
   answers!: {
     targetTplSetNames: string[];
   };
 
+  constructor(...args: unknown[]) {
+    super(...args);
+    this.argument("libraryName", { type: String, required: false });
+  }
+
   async prompting() {
-    this.answers = await this.prompt([
-      {
-        type: "checkbox",
-        name: "targetTplSetNames",
-        message: "Which template set do you want to generate?",
-        choices: tplTargetLibraries,
-      },
-    ]);
+    this.answers = tplTargetLibraries.includes(this.options.libraryName ?? "")
+      ? this.options.libraryName
+      : await this.prompt([
+          {
+            type: "checkbox",
+            name: "targetTplSetNames",
+            message: "Which template set do you want to generate?",
+            choices: tplTargetLibraries,
+          },
+        ]);
   }
   async configuring() {
     for (const tplSetName of tplSetNames) {
