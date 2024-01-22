@@ -73,7 +73,19 @@ export function parseTplSetName(tplSetName: string) {
         thrower(`unknown build target: ${buildTarget}`);
       },
     },
-    moduleType,
+    moduleType: {
+      value: moduleType,
+      get moduleType() {
+        if (moduleType === "commonjs") return "commonjs";
+        if (moduleType === "module") return "module";
+        thrower(`unknown module type: ${moduleType}`);
+      },
+      get tsModule() {
+        if (moduleType === "commonjs") return "CommonJS";
+        if (moduleType === "module") return "NodeNext";
+        thrower(`unknown module type: ${moduleType}`);
+      },
+    },
     slug,
   };
 }

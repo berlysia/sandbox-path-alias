@@ -1,17 +1,22 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "<%= moduleType %>",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "rootDir": "./src",
+<% if (useTsPaths) { %>
+    "baseUrl": ".",
     "paths": {
       "##/*": ["./src/*"],
       "#deep/*": ["./src/deep/*"]
-    }
+    },
+<% } %>
+<% if (allowJs) { %>
+    "allowJs": true,
+<% } %>
   },
   "include": ["src/**/*"]
 }
