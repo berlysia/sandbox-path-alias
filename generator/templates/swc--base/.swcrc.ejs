@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+<% if (moduleType) { %>
+  "module": {
+    "type": "<%= moduleType %>"
+  },
+<% } %>
+  "jsc": {
+<% if (isTS) { %>
+    "parser": {
+      "syntax": "typescript"
+    },
+<% } %>
+<% if (usePaths) { %>
+    "baseUrl": ".",
+    "paths": {
+      "##/*": ["./src/*"],
+      "#deep/*": ["./src/deep/*"]
+    }
+<% } %>
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@my/<%= tplSetName %>_<%= srcSetName %>",
+  "version": "1.0.0",
+  "description": "",
+  "type": "<%= moduleType %>",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "swc src -d dist",
+    "start": "node <%= samedir ? "src" : "dist" %>/index.js"
+  },
+<% if (useImports) { %>
+  "imports": {
+    "##/*": ["./dist/*", "./src/*"],
+    "#deep/*": ["./dist/deep/*", "./src/deep/*"]
+  },
+<% } %>
+  "author": "",
+  "license": "MIT"
+}
