@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
+import { createWriteStream } from "node:fs";
 import { spawn } from "node:child_process";
 import colors from "colors-cli/safe";
 import { parseTplSetName } from "../generator/tplUtils.js";
+import pLimit from "p-limit";
 
 const rootDirName = process.cwd();
 const reset = "\x1b[0m";
@@ -86,92 +88,104 @@ const STATUS = {
 } as const;
 
 async function main() {
+  const limit = pLimit(8);
   const generatedDirs = await fs.readdir("generated");
 
-  const promises = generatedDirs.map(async (generated) => {
-    const cwd = `generated/${generated}`;
-    const [tplSetName, srcSetName] = generated.split("_");
-    const parsedTplSetName = parseTplSetName(tplSetName);
-    const generatedRootDirName = `${rootDirName}/${cwd}`;
-    const resultEntries: Array<[string, string]> = [];
-    const buildResult = await spawnP("npm", ["run", "build"], { cwd });
-    const isBuildSkipped =
-      buildResult.code === 0 &&
-      buildResult.stdout.trim().split("\n").at(-1)?.trim() === "skipskipskip";
-    const markedFileName = colors.cyan_bt.underline(cwd);
+  const promises = generatedDirs.map((generated) =>
+    limit(async () => {
+      const cwd = `generated/${generated}`;
+      const [tplSetName, srcSetName] = generated.split("_");
+      const parsedTplSetName = parseTplSetName(tplSetName);
+      const generatedRootDirName = `${rootDirName}/${cwd}`;
+      const resultEntries: Array<[string, string] | [string, string, string]> =
+        [];
+      const buildResult = await spawnP("npm", ["run", "build"], { cwd });
+      const isBuildSkipped =
+        buildResult.code === 0 &&
+        buildResult.stdout.trim().split("\n").at(-1)?.trim() === "skipskipskip";
+      const markedFileName = colors.cyan_bt.underline(cwd);
 
-    if (isBuildSkipped) {
-      resultEntries.push([markedFileName + ":build", STATUS.SKIPPED]);
-    } else if (buildResult.code !== 0) {
-      return [
-        [
-          markedFileName + " :build",
-          STATUS.FAILURE +
+      if (isBuildSkipped) {
+        resultEntries.push([markedFileName + ":build", STATUS.SKIPPED]);
+      } else if (buildResult.code !== 0) {
+        return [
+          [
+            markedFileName + " :build",
+            STATUS.FAILURE,
             formatStderr(buildResult.stderr, generatedRootDirName) +
-            formatStdout(buildResult.stdout, generatedRootDirName),
-        ],
-      ];
-    } else {
-      resultEntries.push([markedFileName + ":build", STATUS.SUCCESS]);
-    }
+              formatStdout(buildResult.stdout, generatedRootDirName),
+          ],
+        ];
+      } else {
+        resultEntries.push([markedFileName + ":build", STATUS.SUCCESS]);
+      }
 
-    if (isBuildSkipped) {
-      resultEntries.push([markedFileName + ":check", STATUS.SKIPPED]);
-    } else {
-      const distDir = parsedTplSetName.slug.includes("samedir")
-        ? "src"
-        : "dist";
-      const checkResult = await spawnP(
-        "npx",
-        [
-          "tsx",
-          "./scripts/checkResolved.ts",
-          `${generatedRootDirName}/${distDir}/index.js`,
-        ],
-        { cwd: rootDirName }
-      );
-      if (checkResult.code === 0) {
-        resultEntries.push([markedFileName + ":check", STATUS.SUCCESS]);
+      if (isBuildSkipped) {
+        resultEntries.push([markedFileName + ":check", STATUS.SKIPPED]);
+      } else {
+        const distDir = parsedTplSetName.slug.includes("samedir")
+          ? "src"
+          : "dist";
+        const checkResult = await spawnP(
+          "npx",
+          [
+            "tsx",
+            "./scripts/checkResolved.ts",
+            `${generatedRootDirName}/${distDir}/index.js`,
+          ],
+          { cwd: rootDirName }
+        );
+        if (checkResult.code === 0) {
+          resultEntries.push([markedFileName + ":check", STATUS.SUCCESS]);
+        } else {
+          resultEntries.push([
+            markedFileName + ":check",
+            STATUS.FAILURE,
+            formatStderr(checkResult.stderr, generatedRootDirName),
+          ]);
+        }
+      }
+
+      const startResult = await spawnP("npm", ["run", "start"], {
+        cwd,
+      });
+      if (startResult.code === 0) {
+        resultEntries.push([markedFileName + ":start", STATUS.SUCCESS + "\n"]);
       } else {
         resultEntries.push([
-          markedFileName + ":check",
-          STATUS.FAILURE +
-            formatStderr(checkResult.stderr, generatedRootDirName),
+          markedFileName + ":start",
+          STATUS.FAILURE,
+          formatStderr(startResult.stderr, generatedRootDirName),
         ]);
       }
-    }
 
-    const startResult = await spawnP("npm", ["run", "start"], {
-      cwd,
-    });
-    if (startResult.code === 0) {
-      resultEntries.push([markedFileName + ":start", STATUS.SUCCESS + "\n"]);
-    } else {
-      resultEntries.push([
-        markedFileName + ":start",
-        STATUS.FAILURE + formatStderr(startResult.stderr, generatedRootDirName),
-      ]);
-    }
+      if (
+        short ||
+        resultEntries.every(
+          (e) =>
+            e[1].startsWith(STATUS.SKIPPED) || e[1].startsWith(STATUS.SUCCESS)
+        )
+      ) {
+        return [
+          [markedFileName, resultEntries.map((e) => e[1][0]).join("") + "\n"],
+        ];
+      }
 
-    if (
-      short ||
-      resultEntries.every(
-        (e) =>
-          e[1].startsWith(STATUS.SKIPPED) || e[1].startsWith(STATUS.SUCCESS)
-      )
-    ) {
-      return [
-        [markedFileName, resultEntries.map((e) => e[1][0]).join("") + "\n"],
-      ];
-    }
+      return resultEntries;
+    })
+  );
 
-    return resultEntries;
-  });
+  const outfileStream = createWriteStream("out.ndjson");
 
   promises.reduce<Promise<void>>(async (p, c) => {
     await p;
     const result = await c;
-    console.log(...result.flat());
+    outfileStream.write(
+      result
+        .flat()
+        .map((x) => JSON.stringify(x))
+        .join(",") + "\n"
+    );
   }, Promise.resolve());
 }
 
